@@ -1,7 +1,12 @@
+import { Box } from "@mui/material"
+
+
 const Empresa = () => {
-    return (
-      <div>Empresa</div>
-    )
-  }
-  
-  export default Empresa;
+  return (
+    <Box component="main" sx={{ flexGrow: 1, my: 2}}>
+        Empresas
+    </Box>
+  )
+}
+
+export default Empresa

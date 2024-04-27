@@ -1,8 +1,8 @@
 import { Box, Grid, Container, Typography } from "@mui/material";
 import InicioCard from "../common/InicioCard";
 import ChartCard from "./ChartCard";
-import BaseBar from "./BaseBar";
 import BasePie from "./BasePie";
+import BaseBar from "./BaseBar";
 
 const productosContent = {
     url: 'https://images.unsplash.com/photo-1615996001375-c7ef13294436?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
