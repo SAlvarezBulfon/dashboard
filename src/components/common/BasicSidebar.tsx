@@ -2,29 +2,29 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { cilBarChart, cilBuilding, cilCart, cilFastfood, cilPeople } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
-import { CNavGroup, CNavItem, CNavTitle, CSidebar, CSidebarBrand, CSidebarHeader, CSidebarNav } from "@coreui/react";
-import BaseNavbar from './BaseNavbar';
+import { CNavGroup, CNavItem, CNavTitle, CSidebar, CSidebarNav } from "@coreui/react";
 import '@coreui/coreui/dist/css/coreui.min.css';
+import { cilDollar } from "@coreui/icons";
+
 
 const BasicSidebar: React.FC = () => {
+
     return (
-        <div className="d-flex">
+        <div>
             <CSidebar className="border-end d-flex flex-column" style={{ height: '100vh' }}>
-                <CSidebarHeader className="border-bottom">
-                    <CSidebarBrand>Buen Sabor</CSidebarBrand>
-                </CSidebarHeader>
                 <CSidebarNav>
                     <CNavTitle>
                         Dashboard
                     </CNavTitle>
                     <CNavItem>
-                        <Link to="/" className="nav-link">
+                        <Link to="/" className="nav-link" >
                             <CIcon customClassName="nav-icon" icon={cilBarChart} />
                             Inicio
                         </Link>
                     </CNavItem>
+
                     <CNavItem>
-                        <Link to="/empresa" className="nav-link">
+                        <Link to="/empresas" className="nav-link">
                             <CIcon customClassName="nav-icon" icon={cilBuilding} />
                             Empresa
                         </Link>
@@ -38,7 +38,7 @@ const BasicSidebar: React.FC = () => {
                         }
                     >
                         <CNavItem>
-                            <Link to="/productos" className="nav-link">
+                            <Link to="/productos" className="nav-link" >
                                 <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
                                 Lista de Productos
                             </Link>
@@ -50,6 +50,14 @@ const BasicSidebar: React.FC = () => {
                             </Link>
                         </CNavItem>
                     </CNavGroup>
+
+                    <CNavItem>
+                        <Link to="/promociones" className="nav-link">
+                            <CIcon customClassName="nav-icon" icon={cilDollar} />
+                            Promociones
+                        </Link>
+                    </CNavItem>
+
                     <CNavGroup
                         toggler={
                             <>
@@ -59,7 +67,7 @@ const BasicSidebar: React.FC = () => {
                         }
                     >
                         <CNavItem>
-                            <Link to="/empleados" className="nav-link">
+                            <Link to="/empleados" className="nav-link" >
                                 <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
                                 Lista de Empleados
                             </Link>
@@ -79,10 +87,9 @@ const BasicSidebar: React.FC = () => {
                     </CNavItem>
                 </CSidebarNav>
             </CSidebar>
-            <div className='flex-column' style={{ width: '100%' }}>
-                <BaseNavbar />
-            </div>
         </div>
+
+        
     );
 }
 
