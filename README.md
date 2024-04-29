@@ -5,7 +5,7 @@ Este proyecto es un dashboard para la gestión de un negocio de alimentos llamad
 
 ## Instalación y Ejecución
 
-- Clona este repositorio: git clone https://github.com/SAlvarezBulfon/persona-ABM.git
+- Clona este repositorio: git clone https://github.com/SAlvarezBulfon/dashboard.git
 
 ### Instala las dependencias:
 -npm install
