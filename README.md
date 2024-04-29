@@ -15,9 +15,9 @@ Este proyecto es un dashboard para la gestión de un negocio de alimentos llamad
 - json-server --watch db.json
 
 ## Características
-- Gestión de productos: Incluye productos, insumos, categorías, empleados, roles y promociones.
-- Visualización de datos: Gráficos de barras y pastel para análisis visual.
-- Búsqueda: Barra de búsqueda
+- Incluye productos, insumos, categorías, empleados, roles y promociones.
+- Estadísticas.
+- Organización, búsqueda y paginación en tablas.
 
 ## Tecnologías Utilizadas
 - React
