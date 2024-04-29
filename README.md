@@ -15,7 +15,7 @@ Este proyecto es un dashboard para la gestión de un negocio de alimentos llamad
 - json-server --watch db.json
 
 ## Características
-- Incluye productos, insumos, categorías, empleados, roles y promociones.
+- Incluye productos, insumos, categorías y promociones.
 - Estadísticas.
 - Organización, búsqueda y paginación en tablas.
 
