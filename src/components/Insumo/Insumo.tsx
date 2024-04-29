@@ -19,35 +19,46 @@ interface Column {
 }
 
 const Insumo = () => {
+  // Obtiene la función de despacho de acciones de Redux.
   const dispatch = useAppDispatch();
+  // Obtiene el estado global de Redux relacionado con los artículos de insumo.
   const globalArticulosInsumos = useAppSelector((state) => state.articuloInsumo.articuloInsumo);
 
+  // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
+  // Efecto que se ejecuta al cargar el componente para obtener los artículos de insumo.
   useEffect(() => {
-    const fetchArticulosManufacturados = async () => {
+    const fetchArticulosInsumos = async () => {
       try {
+        // Instancia un cliente BackendClient para obtener los artículos de insumo desde la API.
         const articuloInsumoClient = new BackendClient<IArticuloInsumo>('http://localhost:3000/articulosInsumos');
 
-        // Get all articuloInsumo
+        // Obtiene todos los artículos de insumo.
         const articulosInsumos = await articuloInsumoClient.getAll();
+        // Envía los artículos de insumo al estado global de Redux.
         dispatch(setArticuloInsumo(articulosInsumos)); 
+        // Establece los datos filtrados para su visualización.
         setFilteredData(articulosInsumos); 
       } catch (error) {
-        console.error("Error al obtener los artículos manufacturados:", error);
+        console.error("Error al obtener los artículos de insumo:", error);
       }
     };
 
-    fetchArticulosManufacturados();
+    fetchArticulosInsumos();
   }, [dispatch]); 
 
+  // Función para manejar la búsqueda de artículos de insumo.
   const handleSearch = (query: string) => {
+    // Filtra los artículos de insumo globales según la consulta de búsqueda.
     const filtered = globalArticulosInsumos.filter((item) =>
       item.denominacion.toLowerCase().includes(query.toLowerCase())
     );
+    // Establece los datos filtrados para su visualización.
     setFilteredData(filtered);
   };
 
+  // Columnas de la tabla de artículos de insumo.
   const columns: Column[] = [
     {
       id: "imagen",
@@ -70,7 +81,6 @@ const Insumo = () => {
       renderCell: (rowData) => <>{rowData.esParaElaborar ? "Sí" : "No"}</>,
     },
   ];
-  
 
   return (
     <Box component="main" sx={{ flexGrow: 1, my: 2}}>

@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
@@ -19,7 +19,9 @@ interface Column {
 }
 
 const Producto = () => {
+
   const dispatch = useAppDispatch();
+    // Estado global de Redux
   const globalArticulosManufacturados = useAppSelector(
     (state) => state.articuloManufacturado.articuloManufacturado
   );
@@ -27,11 +29,10 @@ const Producto = () => {
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
   useEffect(() => {
+    // Función para obtener los artículos manufacturados
     const fetchArticulosManufacturados = async () => {
       try {
         const articuloManufacturadoClient = new BackendClient<IArticuloManufacturado>('http://localhost:3000/articulosManufacturados');
-
-        // Get all ArticuloManufacturados
         const articulosManufacturados = await articuloManufacturadoClient.getAll();
         dispatch(setArticuloManufacturado(articulosManufacturados)); 
         setFilteredData(articulosManufacturados); 
@@ -40,17 +41,18 @@ const Producto = () => {
       }
     };
 
-    fetchArticulosManufacturados();
+    fetchArticulosManufacturados(); 
   }, [dispatch]); 
 
+  // Función para manejar la búsqueda de artículos manufacturados
   const handleSearch = (query: string) => {
-    // Filtrar los datos globales según la consulta de búsqueda
     const filtered = globalArticulosManufacturados.filter((item) =>
       item.denominacion.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredData(filtered);
   };
 
+  // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
     {
       id: "imagen",
@@ -93,9 +95,11 @@ const Producto = () => {
             Producto
           </Button>
         </Box>
+        {/* Barra de búsqueda */}
         <Box sx={{mt:2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box>
+        {/* Componente de tabla para mostrar los artículos manufacturados */}
         <TableComponent data={filteredData} columns={columns} />
       </Container>
     </Box>
