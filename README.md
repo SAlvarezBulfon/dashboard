@@ -8,7 +8,7 @@ Este proyecto es un dashboard para la gestión de un negocio de alimentos llamad
 - Clona este repositorio: git clone https://github.com/SAlvarezBulfon/dashboard.git
 
 ### Instala las dependencias:
--npm install
+- npm install
 ### Ejecuta el proyecto:
 - npm run dev
 ### Ejecuta json-server en otra terminal para simular una API:
