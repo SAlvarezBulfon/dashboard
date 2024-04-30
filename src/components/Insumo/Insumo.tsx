@@ -7,6 +7,7 @@ import { Add } from "@mui/icons-material";
 import BackendClient from "../../services/BackendClient";
 import IArticuloInsumo from "../../types/ArticuloInsumo";
 import { setArticuloInsumo } from "../../redux/slices/articuloInsumo";
+import InsumoService from "../../services/InsumoService";
 
 interface Row {
   [key: string]: any;
@@ -23,6 +24,8 @@ const Insumo = () => {
   const dispatch = useAppDispatch();
   // Obtiene el estado global de Redux relacionado con los artículos de insumo.
   const globalArticulosInsumos = useAppSelector((state) => state.articuloInsumo.articuloInsumo);
+  const url = import.meta.env.VITE_API_URL;
+  const insumoService = new InsumoService();
 
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
@@ -31,11 +34,8 @@ const Insumo = () => {
   useEffect(() => {
     const fetchArticulosInsumos = async () => {
       try {
-        // Instancia un cliente BackendClient para obtener los artículos de insumo desde la API.
-        const articuloInsumoClient = new BackendClient<IArticuloInsumo>('http://localhost:3000/articulosInsumos');
-
         // Obtiene todos los artículos de insumo.
-        const articulosInsumos = await articuloInsumoClient.getAll();
+        const articulosInsumos = await insumoService.getAll(url + 'articulosInsumos')
         // Envía los artículos de insumo al estado global de Redux.
         dispatch(setArticuloInsumo(articulosInsumos)); 
         // Establece los datos filtrados para su visualización.

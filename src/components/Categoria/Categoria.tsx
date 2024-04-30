@@ -7,10 +7,13 @@ import BackendClient from '../../services/BackendClient';
 import CategoriaLista from '../Categoria/CategoriaLista';
 import ICategoria from '../../types/Categoria';
 import { setCategoria } from '../../redux/slices/categoria';
+import CategoriaService from '../../services/CategoriaService';
 
 const Categoria = () => {
+  const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const globalCategorias = useAppSelector((state) => state.categoria.categoria); // Obtiene las categorías globales del estado Redux
+  const categoriaService = new CategoriaService();
 
   const [filteredData, setFilteredData] = useState<ICategoria[]>([]); // Estado local para almacenar los datos filtrados
 
@@ -18,8 +21,7 @@ const Categoria = () => {
     const fetchCategorias = async () => {
       try {
         // Crea una instancia del cliente BackendClient para las categorías
-        const categoriasClient = new BackendClient<ICategoria>('http://localhost:3000/categorias');
-        const categorias = await categoriasClient.getAll();
+        const categorias = await categoriaService.getAll(url + 'categorias')
         // Actualiza el estado global de las categorías en Redux
         dispatch(setCategoria(categorias));
         setFilteredData(categorias); 

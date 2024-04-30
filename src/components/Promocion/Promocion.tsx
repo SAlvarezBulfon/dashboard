@@ -8,6 +8,7 @@ import PromocionType from "../../types/Promocion";
 import IPromocion from "../../types/Promocion";
 import BackendClient from "../../services/BackendClient";
 import { setPromocion } from "../../redux/slices/Promocion";
+import PromocionService from "../../services/PromocionService";
 
 interface Row {
   [key: string]: any;
@@ -27,6 +28,9 @@ const Promocion: React.FC = () => {
     (state) => state.promocion.promocion
   );
 
+  const url = import.meta.env.VITE_API_URL;
+  const promocionService = new PromocionService();
+
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
@@ -34,12 +38,9 @@ const Promocion: React.FC = () => {
   useEffect(() => {
     const fetchPromociones = async () => {
       try {
-        // Instancia un cliente BackendClient para obtener las promociones desde la API.
-        const PromocionesClient = new BackendClient<IPromocion>('http://localhost:3000/promociones');
-
         // Obtiene todas las promociones.
-        const promociones = await PromocionesClient.getAll();
-        // Envía las promociones al estado global de Redux.
+        const promociones = await promocionService.getAll(url + 'promociones')       
+         // Envía las promociones al estado global de Redux.
         dispatch(setPromocion(promociones)); 
         // Establece los datos filtrados para su visualización.
         setFilteredData(promociones); 

@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { setArticuloManufacturado } from "../../redux/slices/articuloManufacturado";
 import TableComponent from "../Table/Table";
 import SearchBar from "../common/SearchBar";
-import BackendClient from "../../services/BackendClient";
-import IArticuloManufacturado from "../../types/ArticuloManufacturado";
+import  ProductoService  from "../../services/ProductoService";
 
 interface Row {
   [key: string]: any;
@@ -19,8 +18,9 @@ interface Column {
 }
 
 const Producto = () => {
-
+  const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  const productoService = new ProductoService();
     // Estado global de Redux
   const globalArticulosManufacturados = useAppSelector(
     (state) => state.articuloManufacturado.articuloManufacturado
@@ -32,8 +32,7 @@ const Producto = () => {
     // Función para obtener los artículos manufacturados
     const fetchArticulosManufacturados = async () => {
       try {
-        const articuloManufacturadoClient = new BackendClient<IArticuloManufacturado>('http://localhost:3000/articulosManufacturados');
-        const articulosManufacturados = await articuloManufacturadoClient.getAll();
+        const articulosManufacturados = await productoService.getAll( url + 'articulosManufacturados');
         dispatch(setArticuloManufacturado(articulosManufacturados)); 
         setFilteredData(articulosManufacturados); 
       } catch (error) {
