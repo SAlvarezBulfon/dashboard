@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, TablePagination, IconButton, Box } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, TablePagination, Box } from '@mui/material';
+import  DeleteButton  from './DeleteButton'; 
+import EditButton from './EditButton';
 
 interface Row {
   [key: string]: any;
@@ -16,9 +16,11 @@ interface Column {
 interface Props {
   data: Row[];
   columns: Column[];
+  onEdit: (index: number) => void; // Función para editar
+  onDelete: (index: number) => void; // Función para eliminar
 }
 
-const TableComponent: React.FC<Props> = ({ data, columns }) => {
+const TableComponent: React.FC<Props> = ({ data, columns, onEdit, onDelete }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState<keyof Row>('');
@@ -65,7 +67,7 @@ const TableComponent: React.FC<Props> = ({ data, columns }) => {
                 </TableSortLabel>
               </TableCell>
             ))}
-            <TableCell>Acciones</TableCell> {/* Agregar una columna para las acciones */}
+            <TableCell>Acciones</TableCell> {/* Nueva columna para acciones */}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -78,12 +80,9 @@ const TableComponent: React.FC<Props> = ({ data, columns }) => {
               ))}
               <TableCell>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton aria-label="editar">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton aria-label="eliminar">
-                    <DeleteIcon />
-                  </IconButton>
+                  {/* Utilizamos los nuevos componentes de botones */}
+                  <EditButton onClick={() => onEdit(index)} />
+                  <DeleteButton onClick={() => onDelete(index)} />
                 </Box>
               </TableCell>
             </TableRow>

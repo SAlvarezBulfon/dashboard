@@ -1,4 +1,5 @@
 import ArticuloInsumo from "./ArticuloInsumo";
+import DataModel from "./DataModel";
 
 interface IArticuloManufacturadoDetalle extends  DataModel<IArticuloManufacturadoDetalle> {
     cantidad: number;

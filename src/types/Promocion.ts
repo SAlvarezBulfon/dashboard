@@ -1,4 +1,5 @@
 import ArticuloInsumo from "./ArticuloInsumo";
+import DataModel from "./DataModel";
 import Imagenes from "./Imagenes";
 
 interface Promocion extends DataModel<Promocion>{

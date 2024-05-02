@@ -1,4 +1,5 @@
 import ArticuloManufacturadoDetalle from "./ArticuloManufacturadoDetalle";
+import DataModel from "./DataModel";
 import Imagenes from "./Imagenes";
 import UnidadMedida from "./UnidadMedida";
 

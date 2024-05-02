@@ -5,10 +5,9 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../common/SearchBar";
 import PromocionType from "../../types/Promocion";
-import IPromocion from "../../types/Promocion";
-import BackendClient from "../../services/BackendClient";
 import { setPromocion } from "../../redux/slices/Promocion";
 import PromocionService from "../../services/PromocionService";
+import Swal from "sweetalert2";
 
 interface Row {
   [key: string]: any;
@@ -34,21 +33,23 @@ const Promocion: React.FC = () => {
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
+
+  const fetchPromociones = async () => {
+    try {
+      // Obtiene todas las promociones.
+      const promociones = await promocionService.getAll(url + 'promociones')       
+       // Envía las promociones al estado global de Redux.
+      dispatch(setPromocion(promociones)); 
+      // Establece los datos filtrados para su visualización.
+      setFilteredData(promociones); 
+    } catch (error) {
+      console.error("Error al obtener las promociones:", error);
+    }
+  };
+
+
   // Efecto que se ejecuta al cargar el componente para obtener las promociones.
   useEffect(() => {
-    const fetchPromociones = async () => {
-      try {
-        // Obtiene todas las promociones.
-        const promociones = await promocionService.getAll(url + 'promociones')       
-         // Envía las promociones al estado global de Redux.
-        dispatch(setPromocion(promociones)); 
-        // Establece los datos filtrados para su visualización.
-        setFilteredData(promociones); 
-      } catch (error) {
-        console.error("Error al obtener las promociones:", error);
-      }
-    };
-
     fetchPromociones();
   }, [dispatch]);
 
@@ -61,6 +62,46 @@ const Promocion: React.FC = () => {
     // Establece los datos filtrados para su visualización.
     setFilteredData(filtered);
   };
+
+    // Función para editar la promoción
+    const handleEdit = (index: number) => {
+      console.log("Editar la promoción en el índice", index);
+    };
+  
+    // Función para eliminar la promoción
+    const handleDelete = async (index: number) => {
+      const promocionId = filteredData[index].id.toString(); // Convertimos el ID a string
+      const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Esta acción eliminará la promoción. ¿Quieres continuar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      });
+  
+      if (result.isConfirmed) {
+        try {
+          await promocionService.delete(url + 'promociones', promocionId);
+          // Vuelve a obtener las promociones después de la eliminación
+          fetchPromociones(); 
+          Swal.fire(
+            '¡Eliminado!',
+            'La promoción ha sido eliminado correctamente.',
+            'success'
+          );
+        } catch (error) {
+          console.error("Error al eliminar la promoción:", error);
+          Swal.fire(
+            'Error',
+            'Hubo un problema al eliminar La promoción.',
+            'error'
+          );
+        }
+      }
+    };
 
   // Columnas de la tabla de promociones.
   const columns: Column[] = [
@@ -105,7 +146,7 @@ const Promocion: React.FC = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} />
+        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );

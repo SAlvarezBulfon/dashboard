@@ -5,42 +5,35 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { setArticuloManufacturado } from "../../redux/slices/articuloManufacturado";
 import TableComponent from "../Table/Table";
 import SearchBar from "../common/SearchBar";
-import  ProductoService  from "../../services/ProductoService";
-
-interface Row {
-  [key: string]: any;
-}
-
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell: (rowData: Row) => JSX.Element;
-}
+import ProductoService from "../../services/ProductoService";
+import Row from "../../types/Row";
+import Column from "../../types/Column";
+import Swal from 'sweetalert2';
 
 const Producto = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const productoService = new ProductoService();
-    // Estado global de Redux
+  // Estado global de Redux
   const globalArticulosManufacturados = useAppSelector(
     (state) => state.articuloManufacturado.articuloManufacturado
   );
 
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
-  useEffect(() => {
-    // Función para obtener los artículos manufacturados
-    const fetchArticulosManufacturados = async () => {
-      try {
-        const articulosManufacturados = await productoService.getAll( url + 'articulosManufacturados');
-        dispatch(setArticuloManufacturado(articulosManufacturados)); 
-        setFilteredData(articulosManufacturados); 
-      } catch (error) {
-        console.error("Error al obtener los artículos manufacturados:", error);
-      }
-    };
+  // Función para obtener los productos
+  const fetchProductos = async () => {
+    try {
+      const productos = await productoService.getAll(url + 'articulosManufacturados');
+      dispatch(setArticuloManufacturado(productos)); 
+      setFilteredData(productos); 
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  }; 
 
-    fetchArticulosManufacturados(); 
+    useEffect(() => {
+    fetchProductos(); 
   }, [dispatch]); 
 
   // Función para manejar la búsqueda de artículos manufacturados
@@ -50,6 +43,45 @@ const Producto = () => {
     );
     setFilteredData(filtered);
   };
+
+  // Función para eliminar un artículo manufacturado
+  const handleDelete = async (index: number) => {
+    const productId = filteredData[index].id.toString(); // Convertimos el ID a string
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el producto. ¿Quieres continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await productoService.delete(url + 'productos', productId);
+        // Vuelve a obtener los productos después de la eliminación
+        fetchProductos();
+        Swal.fire(
+          '¡Eliminado!',
+          'El producto ha sido eliminado correctamente.',
+          'success'
+        );
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+        Swal.fire(
+          'Error',
+          'Hubo un problema al eliminar el producto.',
+          'error'
+        );
+      }
+    }
+  };
+    // Función para editar 
+    const handleEdit = (index: number) => {
+      console.log("Editar producto en el índice", index);
+    };
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -99,7 +131,7 @@ const Producto = () => {
           <SearchBar onSearch={handleSearch} />
         </Box>
         {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} />
+        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );

@@ -4,20 +4,12 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../common/SearchBar";
 import { Add } from "@mui/icons-material";
-import BackendClient from "../../services/BackendClient";
-import IArticuloInsumo from "../../types/ArticuloInsumo";
 import { setArticuloInsumo } from "../../redux/slices/articuloInsumo";
 import InsumoService from "../../services/InsumoService";
+import Row from "../../types/Row";
+import Column from "../../types/Column";
+import Swal from "sweetalert2";
 
-interface Row {
-  [key: string]: any;
-}
-
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell: (rowData: Row) => JSX.Element;
-}
 
 const Insumo = () => {
   // Obtiene la función de despacho de acciones de Redux.
@@ -30,21 +22,20 @@ const Insumo = () => {
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
+  const fetchArticulosInsumos = async () => {
+    try {
+      // Obtiene todos los artículos de insumo.
+      const articulosInsumos = await insumoService.getAll(url + 'articulosInsumos')
+      // Envía los artículos de insumo al estado global de Redux.
+      dispatch(setArticuloInsumo(articulosInsumos)); 
+      // Establece los datos filtrados para su visualización.
+      setFilteredData(articulosInsumos); 
+    } catch (error) {
+      console.error("Error al obtener los artículos de insumo:", error);
+    }
+  };
   // Efecto que se ejecuta al cargar el componente para obtener los artículos de insumo.
   useEffect(() => {
-    const fetchArticulosInsumos = async () => {
-      try {
-        // Obtiene todos los artículos de insumo.
-        const articulosInsumos = await insumoService.getAll(url + 'articulosInsumos')
-        // Envía los artículos de insumo al estado global de Redux.
-        dispatch(setArticuloInsumo(articulosInsumos)); 
-        // Establece los datos filtrados para su visualización.
-        setFilteredData(articulosInsumos); 
-      } catch (error) {
-        console.error("Error al obtener los artículos de insumo:", error);
-      }
-    };
-
     fetchArticulosInsumos();
   }, [dispatch]); 
 
@@ -56,6 +47,47 @@ const Insumo = () => {
     );
     // Establece los datos filtrados para su visualización.
     setFilteredData(filtered);
+  };
+
+
+  // Función para editar insumo
+  const handleEdit = (index: number) => {
+    console.log("Editar insumo en el índice", index);
+  };
+
+  // Función para eliminar el insumo
+  const handleDelete = async (index: number) => {
+    const insumoId = filteredData[index].id.toString(); // Convertimos el ID a string
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el articulo de insumo. ¿Quieres continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await insumoService.delete(url + 'articulosInsumos', insumoId);
+        // Vuelve a obtener los insumos después de la eliminación
+        fetchArticulosInsumos(); 
+        Swal.fire(
+          '¡Eliminado!',
+          'El Insumo ha sido eliminado correctamente.',
+          'success'
+        );
+      } catch (error) {
+        console.error("Error al eliminar el insumo:", error);
+        Swal.fire(
+          'Error',
+          'Hubo un problema al eliminar el insumo.',
+          'error'
+        );
+      }
+    }
   };
 
   // Columnas de la tabla de artículos de insumo.
@@ -105,7 +137,7 @@ const Insumo = () => {
         <Box sx={{mt:2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} />
+        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );

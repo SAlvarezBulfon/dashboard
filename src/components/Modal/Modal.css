@@ -1,0 +1,27 @@
+/* Estilos para el modal */
+  label {
+    font-weight: bold;
+  }
+  
+  #Modal input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .custom-button:hover {
+    color: white;
+  }
+  
+  .custom-button:hover .btn-text {
+    color: white;
+  }
+  
