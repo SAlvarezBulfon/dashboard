@@ -2,16 +2,9 @@ import React, { useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, TablePagination, Box } from '@mui/material';
 import  DeleteButton  from './DeleteButton'; 
 import EditButton from './EditButton';
+import Row from '../../types/Row';
+import Column from '../../types/Column';
 
-interface Row {
-  [key: string]: any;
-}
-
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell?: (row: Row) => React.ReactNode;
-}
 
 interface Props {
   data: Row[];

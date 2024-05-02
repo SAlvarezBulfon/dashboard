@@ -23,12 +23,12 @@ const ModalCategoria: React.FC<{ getCategorias: () => void }> = ({
     subCategorias: [],
   };
 
-  const modal = useAppSelector((state) => state.modal.modalCategoria);
+  const modal = useAppSelector((state) => state.modal.modal);
   const elementActive = useAppSelector((state) => state.tabla.elementActive);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    dispatch(toggleModal({ modalName: "modalCategoria" }));
+    dispatch(toggleModal({ modalName: "modal" }));
   };
 
   return (

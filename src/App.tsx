@@ -11,6 +11,7 @@ import Empleado from './components/Empleado/Empleado';
 import Rol from './components/Rol/Rol';
 import BaseNavbar from './components/common/BaseNavbar';
 import Promocion from './components/Promocion/Promocion';
+import Sucursales from './components/Empresa/Sucursales/Sucursales';
 
 const App: React.FC = () => {
   return (
@@ -31,7 +32,7 @@ const App: React.FC = () => {
               <Route path="/empleados" element={<Empleado />} />
               <Route path="/roles" element={<Rol />} />
               <Route path="/promociones" element={<Promocion />} />
-              {/* Otras rutas */}
+              <Route path="/sucursales/:empresaId" element={<Sucursales />} />
             </Routes>
             </div>
     </Router>

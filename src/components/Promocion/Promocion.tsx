@@ -8,16 +8,9 @@ import PromocionType from "../../types/Promocion";
 import { setPromocion } from "../../redux/slices/Promocion";
 import PromocionService from "../../services/PromocionService";
 import Swal from "sweetalert2";
+import Row from "../../types/Row";
+import Column from "../../types/Column";
 
-interface Row {
-  [key: string]: any;
-}
-
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell: (rowData: Row) => JSX.Element;
-}
 
 const Promocion: React.FC = () => {
   // Obtiene la función de despacho de acciones de Redux.

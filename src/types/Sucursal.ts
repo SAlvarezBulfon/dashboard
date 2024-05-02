@@ -4,7 +4,6 @@ import Domicilio from "./Domicilio";
 import Promocion from "./Promocion";
 
 export default interface Sucursal  extends DataModel<Sucursal>{
-    id: number;
     nombre: string;
     horarioApertura: string;
     horarioCierre: string;

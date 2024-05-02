@@ -89,7 +89,7 @@ const Categoria = () => {
 
   // Función para mostrar el modal de añadir categoría
   const handleAddCategoria = () => {
-    dispatch(toggleModal({ modalName: "modalCategoria" }));
+    dispatch(toggleModal({ modalName: "modal" }));
   };
 
   // Definición de las columnas para la tabla de categorías
