@@ -8,13 +8,12 @@ import SearchBar from "../common/SearchBar";
 import CategoriaService from "../../services/CategoriaService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
-import Swal from 'sweetalert2';
 import ModalCategoria from "../Modal/ModalCategoria";
 import ModalSubcategoria from "../Modal/ModalSubcategorias"; 
 import { toggleModal } from "../../redux/slices/modal";
 import ICategoria from "../../types/Categoria";
 import { List, ListItem, ListItemText } from "@mui/material";
-import { handleSearch } from "../../utils/utilities";
+import { handleDelete, handleSearch } from "../../utils/utilities";
 
 const Categoria = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -61,39 +60,18 @@ const Categoria = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  // Función para eliminar una categoría
-  const handleDelete = async (index: number) => {
-    const categoryId = filteredData[index].id.toString(); // Convertimos el ID a string
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará la categoría. ¿Quieres continuar?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await categoriaService.delete(url + 'categorias', categoryId);
-        // Vuelve a obtener las categorías después de la eliminación
-        fetchCategorias(); 
-        Swal.fire(
-          '¡Eliminado!',
-          'La categoría ha sido eliminada correctamente.',
-          'success'
-        );
-      } catch (error) {
-        console.error("Error al eliminar la categoría:", error);
-        Swal.fire(
-          'Error',
-          'Hubo un problema al eliminar la categoría.',
-          'error'
-        );
-      }
-    }
+  // Utiliza la función handleDelete importada
+  const onDelete = async (index: number) => {
+    handleDelete(
+      index,
+      categoriaService,
+      filteredData,
+      fetchCategorias,
+      '¿Estás seguro de eliminar esta categoría?',
+      'Categoría eliminada correctamente.',
+      'Hubo un problema al eliminar la categoría.',
+      url + 'categorias'
+    );
   };
 
  // Función para abrir el modal de subcategoría
@@ -177,7 +155,7 @@ const Categoria = () => {
           data={filteredData} 
           columns={columns} 
           onEdit={handleEdit} 
-          onDelete={handleDelete} 
+          onDelete={onDelete} 
         />
         {/* Modal de añadir categoría */}
         <ModalCategoria getCategorias={fetchCategorias} />

@@ -8,8 +8,7 @@ import { setArticuloInsumo } from "../../redux/slices/articuloInsumo";
 import InsumoService from "../../services/InsumoService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
-import Swal from "sweetalert2";
-import { handleSearch } from "../../utils/utilities";
+import { handleDelete, handleSearch } from "../../utils/utilities";
 
 
 const Insumo = () => {
@@ -51,39 +50,17 @@ const Insumo = () => {
     console.log("Editar insumo en el índice", index);
   };
 
-  // Función para eliminar el insumo
-  const handleDelete = async (index: number) => {
-    const insumoId = filteredData[index].id.toString(); // Convertimos el ID a string
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el articulo de insumo. ¿Quieres continuar?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await insumoService.delete(url + 'articulosInsumos', insumoId);
-        // Vuelve a obtener los insumos después de la eliminación
-        fetchArticulosInsumos(); 
-        Swal.fire(
-          '¡Eliminado!',
-          'El Insumo ha sido eliminado correctamente.',
-          'success'
-        );
-      } catch (error) {
-        console.error("Error al eliminar el insumo:", error);
-        Swal.fire(
-          'Error',
-          'Hubo un problema al eliminar el insumo.',
-          'error'
-        );
-      }
-    }
+  const onDelete = async (index: number) => {
+    handleDelete(
+      index,
+      insumoService,
+      filteredData,
+      fetchArticulosInsumos,
+      '¿Estás seguro de eliminar este producto?',
+      'Producto eliminado correctamente.',
+      'Hubo un problema al eliminar el producto.',
+      url + 'sucursales'
+    );
   };
 
   // Columnas de la tabla de artículos de insumo.
@@ -133,7 +110,7 @@ const Insumo = () => {
         <Box sx={{mt:2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
+        <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );

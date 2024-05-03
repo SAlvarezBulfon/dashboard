@@ -7,12 +7,11 @@ import TableComponent from "../Table/Table";
 import SearchBar from "../common/SearchBar";
 import EmpresaService from "../../services/EmpresaService";
 import Column from "../../types/Column";
-import Swal from 'sweetalert2';
 import Empresa from "../../types/Empresa"; // Importamos la interfaz Empresa
 import { Link } from "react-router-dom";
 import { toggleModal } from "../../redux/slices/modal";
 import ModalEmpresa from "../Modal/ModalEmpresa";
-import { handleSearch } from "../../utils/utilities";
+import { handleDelete, handleSearch } from "../../utils/utilities";
 
 const EmpresaComponent = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -44,39 +43,18 @@ const EmpresaComponent = () => {
   const onSearch = (query: string) => {
     handleSearch(query, globalEmpresas, 'nombre', setFilteredData);
   };
-  // Función para eliminar una empresa
-  const handleDelete = async (index: number) => {
-    const empresaId = filteredData[index].id.toString(); // Convertimos el ID a string
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará la empresa. ¿Quieres continuar?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await empresaService.delete(url + 'empresas', empresaId);
-        // Vuelve a obtener las empresas después de la eliminación
-        fetchEmpresas();
-        Swal.fire(
-          '¡Eliminado!',
-          'La empresa ha sido eliminada correctamente.',
-          'success'
-        );
-      } catch (error) {
-        console.error("Error al eliminar la empresa:", error);
-        Swal.fire(
-          'Error',
-          'Hubo un problema al eliminar la empresa.',
-          'error'
-        );
-      }
-    }
+  
+  const onDelete = async (index: number) => {
+    handleDelete(
+      index,
+      empresaService,
+      filteredData,
+      fetchEmpresas,
+      '¿Estás seguro de eliminar esta empresa?',
+      'Empresa eliminada correctamente.',
+      'Hubo un problema al eliminar la empresa.',
+      url + 'empresas'
+    );
   };
 
   // Función para editar una empresa
@@ -131,7 +109,7 @@ const EmpresaComponent = () => {
           <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar las empresas */}
-        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
+        <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
 
       {/* Modal de añadir empresa */}
       <ModalEmpresa getEmpresas={fetchEmpresas} />

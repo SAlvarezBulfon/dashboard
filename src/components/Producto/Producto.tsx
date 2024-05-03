@@ -4,12 +4,11 @@ import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { setArticuloManufacturado } from "../../redux/slices/articuloManufacturado";
 import TableComponent from "../Table/Table";
-import SearchBar from "../common/SearchBar";
 import ProductoService from "../../services/ProductoService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
-import Swal from 'sweetalert2';
-import { handleSearch } from "../../utils/utilities";
+import { handleDelete, handleSearch } from "../../utils/utilities";
+import SearchBar from "../common/SearchBar";
 
 const Producto = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -42,39 +41,18 @@ const Producto = () => {
   const onSearch = (query: string) => {
     handleSearch(query, globalArticulosManufacturados, 'denominacion', setFilteredData);
   };
-  // Función para eliminar un artículo manufacturado
-  const handleDelete = async (index: number) => {
-    const productId = filteredData[index].id.toString(); // Convertimos el ID a string
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el producto. ¿Quieres continuar?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    });
 
-    if (result.isConfirmed) {
-      try {
-        await productoService.delete(url + 'productos', productId);
-        // Vuelve a obtener los productos después de la eliminación
-        fetchProductos();
-        Swal.fire(
-          '¡Eliminado!',
-          'El producto ha sido eliminado correctamente.',
-          'success'
-        );
-      } catch (error) {
-        console.error("Error al eliminar el producto:", error);
-        Swal.fire(
-          'Error',
-          'Hubo un problema al eliminar el producto.',
-          'error'
-        );
-      }
-    }
+  const onDelete = async (index: number) => {
+    handleDelete(
+      index,
+      productoService,
+      filteredData,
+      fetchProductos,
+      '¿Estás seguro de eliminar este producto?',
+      'Producto eliminado correctamente.',
+      'Hubo un problema al eliminar el producto.',
+      url + 'sucursales'
+    );
   };
   
   // Función para editar 
@@ -130,7 +108,7 @@ const Producto = () => {
           <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
+        <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );

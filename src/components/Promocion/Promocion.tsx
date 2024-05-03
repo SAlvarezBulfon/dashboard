@@ -4,13 +4,11 @@ import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../common/SearchBar";
-import PromocionType from "../../types/Promocion";
 import { setPromocion } from "../../redux/slices/Promocion";
 import PromocionService from "../../services/PromocionService";
-import Swal from "sweetalert2";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
-import { handleSearch } from "../../utils/utilities";
+import { handleDelete, handleSearch } from "../../utils/utilities";
 
 
 const Promocion: React.FC = () => {
@@ -57,39 +55,17 @@ const Promocion: React.FC = () => {
       console.log("Editar la promoción en el índice", index);
     };
   
-    // Función para eliminar la promoción
-    const handleDelete = async (index: number) => {
-      const promocionId = filteredData[index].id.toString(); // Convertimos el ID a string
-      const result = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'Esta acción eliminará la promoción. ¿Quieres continuar?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-      });
-  
-      if (result.isConfirmed) {
-        try {
-          await promocionService.delete(url + 'promociones', promocionId);
-          // Vuelve a obtener las promociones después de la eliminación
-          fetchPromociones(); 
-          Swal.fire(
-            '¡Eliminado!',
-            'La promoción ha sido eliminado correctamente.',
-            'success'
-          );
-        } catch (error) {
-          console.error("Error al eliminar la promoción:", error);
-          Swal.fire(
-            'Error',
-            'Hubo un problema al eliminar La promoción.',
-            'error'
-          );
-        }
-      }
+    const onDelete = async (index: number) => {
+      handleDelete(
+        index,
+        promocionService,
+        filteredData,
+        fetchPromociones,
+        '¿Estás seguro de eliminar esta promoción?',
+        'Promoción eliminada correctamente.',
+        'Hubo un problema al eliminar la promoción.',
+        url + 'sucursales'
+      );
     };
 
   // Columnas de la tabla de promociones.
@@ -135,7 +111,7 @@ const Promocion: React.FC = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
+        <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );

@@ -9,9 +9,8 @@ import Column from '../../../types/Column';
 import SucursalService from '../../../services/SucursalService';
 import Sucursal from '../../../types/Sucursal';
 import EmpresaService from '../../../services/EmpresaService'; // Importa el servicio de la empresa
-import Swal from 'sweetalert2';
 import { setSucursal } from '../../../redux/slices/sucursal';
-import { handleSearch } from '../../../utils/utilities';
+import { handleDelete, handleSearch } from '../../../utils/utilities';
 
 const SucursalesEmpresa: React.FC = () => {
   const { empresaId } = useParams<{ empresaId: string }>();
@@ -64,37 +63,17 @@ const SucursalesEmpresa: React.FC = () => {
     handleSearch(query, globalSucursales, 'nombre', setFilteredData);
   };
 
-  const handleDelete = async (index: number) => {
-    const sucursalId = filteredData[index].id.toString();
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará la sucursal. ¿Quieres continuar?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await sucursalService.delete(`${url}sucursales`, sucursalId);
-        fetchSucursales();
-        Swal.fire(
-          '¡Eliminado!',
-          'La sucursal ha sido eliminada correctamente.',
-          'success'
-        );
-      } catch (error) {
-        console.error('Error al eliminar la sucursal:', error);
-        Swal.fire(
-          'Error',
-          'Hubo un problema al eliminar la sucursal.',
-          'error'
-        );
-      }
-    }
+  const onDelete = async (index: number) => {
+    handleDelete(
+      index,
+      sucursalService,
+      filteredData,
+      fetchSucursales,
+      '¿Estás seguro de eliminar esta sucursal?',
+      'Sucursal eliminada correctamente.',
+      'Hubo un problema al eliminar la sucursal.',
+      url + 'sucursales'
+    );
   };
 
   const handleEdit = (index: number) => {
@@ -134,7 +113,7 @@ const SucursalesEmpresa: React.FC = () => {
         <Box sx={{mt:2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
+        <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
       </Container>
     </Box>
   );
