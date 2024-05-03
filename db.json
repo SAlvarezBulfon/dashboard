@@ -944,12 +944,7 @@
           }
         }
       ],
-      "subCategorias": [
-        {
-          "id": 6,
-          "denominacion": "Coca cola"
-        }
-      ]
+      "subCategorias": []
     },
     {
       "id": 3,
@@ -992,6 +987,12 @@
           }
         }
       ],
+      "subCategorias": []
+    },
+    {
+      "id": 6,
+      "denominacion": "Hamburguesas",
+      "articulos": [],
       "subCategorias": []
     }
   ],

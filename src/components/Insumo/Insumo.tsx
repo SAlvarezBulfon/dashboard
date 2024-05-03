@@ -9,6 +9,7 @@ import InsumoService from "../../services/InsumoService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
 import Swal from "sweetalert2";
+import { handleSearch } from "../../utils/utilities";
 
 
 const Insumo = () => {
@@ -39,14 +40,9 @@ const Insumo = () => {
     fetchArticulosInsumos();
   }, [dispatch]); 
 
-  // Función para manejar la búsqueda de artículos de insumo.
-  const handleSearch = (query: string) => {
-    // Filtra los artículos de insumo globales según la consulta de búsqueda.
-    const filtered = globalArticulosInsumos.filter((item) =>
-      item.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    // Establece los datos filtrados para su visualización.
-    setFilteredData(filtered);
+  // Llama a la función handleSearch cuando se realiza una búsqueda
+  const onSearch = (query: string) => {
+    handleSearch(query, globalArticulosInsumos, 'denominacion', setFilteredData);
   };
 
 
@@ -135,7 +131,7 @@ const Insumo = () => {
           </Button>
         </Box>
         <Box sx={{mt:2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
       </Container>

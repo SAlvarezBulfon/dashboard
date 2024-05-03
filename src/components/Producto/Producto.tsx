@@ -9,6 +9,7 @@ import ProductoService from "../../services/ProductoService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
 import Swal from 'sweetalert2';
+import { handleSearch } from "../../utils/utilities";
 
 const Producto = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -25,25 +26,22 @@ const Producto = () => {
   const fetchProductos = async () => {
     try {
       const productos = await productoService.getAll(url + 'articulosManufacturados');
-      dispatch(setArticuloManufacturado(productos)); 
-      setFilteredData(productos); 
+      dispatch(setArticuloManufacturado(productos));
+      setFilteredData(productos);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
-  }; 
-
-    useEffect(() => {
-    fetchProductos(); 
-  }, [dispatch]); 
-
-  // Función para manejar la búsqueda de artículos manufacturados
-  const handleSearch = (query: string) => {
-    const filtered = globalArticulosManufacturados.filter((item) =>
-      item.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
   };
 
+  useEffect(() => {
+    fetchProductos();
+  }, [dispatch]);
+
+
+  // Llama a la función handleSearch cuando se realiza una búsqueda
+  const onSearch = (query: string) => {
+    handleSearch(query, globalArticulosManufacturados, 'denominacion', setFilteredData);
+  };
   // Función para eliminar un artículo manufacturado
   const handleDelete = async (index: number) => {
     const productId = filteredData[index].id.toString(); // Convertimos el ID a string
@@ -78,10 +76,11 @@ const Producto = () => {
       }
     }
   };
-    // Función para editar 
-    const handleEdit = (index: number) => {
-      console.log("Editar producto en el índice", index);
-    };
+  
+  // Función para editar 
+  const handleEdit = (index: number) => {
+    console.log("Editar producto en el índice", index);
+  };
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -107,7 +106,7 @@ const Producto = () => {
   ];
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, my: 2}}>
+    <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
       <Container>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
           <Typography variant="h5" gutterBottom>
@@ -127,8 +126,8 @@ const Producto = () => {
           </Button>
         </Box>
         {/* Barra de búsqueda */}
-        <Box sx={{mt:2 }}>
-          <SearchBar onSearch={handleSearch} />
+        <Box sx={{ mt: 2 }}>
+          <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar los artículos manufacturados */}
         <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
@@ -9,8 +9,12 @@ import CategoriaService from "../../services/CategoriaService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
 import Swal from 'sweetalert2';
-import ModalCategoria from "../Modal/ModalCategoria"; // Importa ModalCategoria
+import ModalCategoria from "../Modal/ModalCategoria";
+import ModalSubcategoria from "../Modal/ModalSubcategorias"; 
 import { toggleModal } from "../../redux/slices/modal";
+import ICategoria from "../../types/Categoria";
+import { List, ListItem, ListItemText } from "@mui/material";
+import { handleSearch } from "../../utils/utilities";
 
 const Categoria = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -22,7 +26,8 @@ const Categoria = () => {
   );
 
   const [filteredData, setFilteredData] = useState<Row[]>([]);
-
+  const [showSubcategoriaModal, setShowSubcategoriaModal] = useState<boolean>(false); // Estado para controlar la visibilidad del modal de subcategoría
+  const [categoriaPadre, setCategoriaPadre] = useState<ICategoria>();
   // Función para obtener las categorias
   const fetchCategorias = async () => {
     try {
@@ -38,18 +43,22 @@ const Categoria = () => {
     fetchCategorias(); 
   }, [dispatch]); 
 
-  // Función para manejar la búsqueda de categorias
-  const handleSearch = (query: string) => {
-    const filtered = globalCategorias.filter((item) =>
-      item.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
-  };
+  
+  
+    // Llama a la función handleSearch cuando se realiza una búsqueda
+    const onSearch = (query: string) => {
+      handleSearch(query, globalCategorias, 'denominacion', setFilteredData);
+    };
 
   // Función para editar una categoría
   const handleEdit = (index: number) => {
     // Aquí implementa la lógica para editar la categoría en el índice especificado
     console.log("Editar categoría en el índice", index);
+  };
+
+  // Función para mostrar el modal de añadir categoría
+  const handleAddCategoria = () => {
+    dispatch(toggleModal({ modalName: "modal" }));
   };
 
   // Función para eliminar una categoría
@@ -87,14 +96,55 @@ const Categoria = () => {
     }
   };
 
-  // Función para mostrar el modal de añadir categoría
-  const handleAddCategoria = () => {
-    dispatch(toggleModal({ modalName: "modal" }));
+ // Función para abrir el modal de subcategoría
+ const handleOpenSubcategoriaModal = (categoria: ICategoria) => {
+  setCategoriaPadre(categoria); // Guarda la categoría padre en el estado
+  setShowSubcategoriaModal(true);
+};
+
+  // Función para verificar si una categoría es una subcategoría
+  const tieneSubcategoria = (categoria: ICategoria): boolean => {
+    // Verificar si la categoría tiene subcategorías
+    return categoria.subCategorias.length > 0;
   };
 
   // Definición de las columnas para la tabla de categorías
   const columns: Column[] = [
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "esSubcategoria", label: "¿Tiene Subcategoría?", renderCell: (rowData) => <>{tieneSubcategoria(rowData) ? "Sí" : "No"}</> },
+    {
+      id: "subCategorias",
+      label: "Subcategorías",
+      renderCell: (rowData) => (
+        <>
+          {rowData.subCategorias.length > 0 ? (
+            <List>
+              {rowData.subCategorias.map((subcategoria: ICategoria, index: number) => (
+                <ListItem key={index}>
+                  <ListItemText primary={subcategoria.denominacion} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            "-"
+          )}
+        </>
+      ),
+    },
+    {
+      id: "agregarSubcategoria",
+      label: "Agregar Subcategoría",
+      renderCell: (rowData) => (
+        <Button
+          onClick={() => handleOpenSubcategoriaModal(rowData)} // Abre el modal de subcategoría pasando la categoría padre
+          variant="outlined"
+          color="primary"
+          startIcon={<Add />}
+        >
+          Agregar
+        </Button>
+      ),
+    },
   ];
 
   return (
@@ -105,7 +155,7 @@ const Categoria = () => {
             Categorías
           </Typography>
           <Button
-            onClick={handleAddCategoria} // Maneja el evento de clic para mostrar el modal
+            onClick={handleAddCategoria} // Maneja el evento de clic para mostrar el modal de categoría
             sx={{
               bgcolor: "#fb6376",
               "&:hover": {
@@ -120,7 +170,7 @@ const Categoria = () => {
         </Box>
         {/* Barra de búsqueda */}
         <Box sx={{mt:2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar las categorías */}
         <TableComponent 
@@ -131,6 +181,8 @@ const Categoria = () => {
         />
         {/* Modal de añadir categoría */}
         <ModalCategoria getCategorias={fetchCategorias} />
+        {/* Modal de agregar subcategoría */}
+        {showSubcategoriaModal && categoriaPadre && <ModalSubcategoria categoriaPadre={categoriaPadre} getSubcategorias={fetchCategorias} />}
       </Container>
     </Box>
   );

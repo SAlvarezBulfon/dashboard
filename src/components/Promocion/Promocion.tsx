@@ -10,6 +10,7 @@ import PromocionService from "../../services/PromocionService";
 import Swal from "sweetalert2";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
+import { handleSearch } from "../../utils/utilities";
 
 
 const Promocion: React.FC = () => {
@@ -46,14 +47,9 @@ const Promocion: React.FC = () => {
     fetchPromociones();
   }, [dispatch]);
 
-  // Función para manejar la búsqueda de promociones.
-  const handleSearch = (query: string) => {
-    // Filtra las promociones globales según la consulta de búsqueda.
-    const filtered = globalPromociones.filter((promocion: PromocionType) =>
-      promocion.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    // Establece los datos filtrados para su visualización.
-    setFilteredData(filtered);
+  // Llama a la función handleSearch cuando se realiza una búsqueda
+  const onSearch = (query: string) => {
+    handleSearch(query, globalPromociones, 'denominacion', setFilteredData);
   };
 
     // Función para editar la promoción
@@ -137,7 +133,7 @@ const Promocion: React.FC = () => {
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
       </Container>

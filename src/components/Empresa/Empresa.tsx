@@ -12,6 +12,7 @@ import Empresa from "../../types/Empresa"; // Importamos la interfaz Empresa
 import { Link } from "react-router-dom";
 import { toggleModal } from "../../redux/slices/modal";
 import ModalEmpresa from "../Modal/ModalEmpresa";
+import { handleSearch } from "../../utils/utilities";
 
 const EmpresaComponent = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -39,14 +40,10 @@ const EmpresaComponent = () => {
     fetchEmpresas(); 
   }, [dispatch]); 
 
-  // Función para manejar la búsqueda de empresas
-  const handleSearch = (query: string) => {
-    const filtered = globalEmpresas.filter((empresa) =>
-      empresa.nombre.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
+  // Llama a la función handleSearch cuando se realiza una búsqueda
+  const onSearch = (query: string) => {
+    handleSearch(query, globalEmpresas, 'nombre', setFilteredData);
   };
-
   // Función para eliminar una empresa
   const handleDelete = async (index: number) => {
     const empresaId = filteredData[index].id.toString(); // Convertimos el ID a string
@@ -131,7 +128,7 @@ const EmpresaComponent = () => {
         </Box>
         {/* Barra de búsqueda */}
         <Box sx={{mt:2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar las empresas */}
         <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />

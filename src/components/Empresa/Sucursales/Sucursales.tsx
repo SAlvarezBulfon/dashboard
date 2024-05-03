@@ -11,6 +11,7 @@ import Sucursal from '../../../types/Sucursal';
 import EmpresaService from '../../../services/EmpresaService'; // Importa el servicio de la empresa
 import Swal from 'sweetalert2';
 import { setSucursal } from '../../../redux/slices/sucursal';
+import { handleSearch } from '../../../utils/utilities';
 
 const SucursalesEmpresa: React.FC = () => {
   const { empresaId } = useParams<{ empresaId: string }>();
@@ -58,11 +59,9 @@ const SucursalesEmpresa: React.FC = () => {
   
   
 
-  const handleSearch = (query: string) => {
-    const filtered = globalSucursales.filter((sucursal) =>
-      sucursal.nombre.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
+  // Llama a la función handleSearch cuando se realiza una búsqueda
+  const onSearch = (query: string) => {
+    handleSearch(query, globalSucursales, 'nombre', setFilteredData);
   };
 
   const handleDelete = async (index: number) => {
@@ -133,7 +132,7 @@ const SucursalesEmpresa: React.FC = () => {
           </Button>
         </Box>
         <Box sx={{mt:2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={handleDelete} onEdit={handleEdit} />
       </Container>
