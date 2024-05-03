@@ -2,8 +2,17 @@ import { Dispatch, SetStateAction } from "react";
   
 import Swal from 'sweetalert2';
 import BackendClient from '../services/BackendClient';
-
-// Función para manejar la eliminación genérica
+/**
+ * Función para manejar la eliminación genérica de un elemento.
+ * @param index El índice del elemento a eliminar en el array de datos filtrados.
+ * @param backendService Instancia del servicio de backend utilizado para realizar la eliminación.
+ * @param filteredData Array de datos filtrados donde se encuentra el elemento a eliminar.
+ * @param fetchItems Función para volver a cargar los elementos después de la eliminación.
+ * @param confirmationMessage Mensaje de confirmación para la eliminación (opcional).
+ * @param successMessage Mensaje de éxito después de la eliminación (opcional).
+ * @param errorMessage Mensaje de error en caso de falla en la eliminación (opcional).
+ * @param url URL de la API donde se encuentra el recurso a eliminar.
+ */
 export const handleDelete = async <T>(
   index: number,
   backendService: BackendClient<T>,
@@ -48,6 +57,14 @@ export const handleDelete = async <T>(
   }
 };
 
+
+/**
+ * Función para realizar una búsqueda dentro de un conjunto de datos.
+ * @param query La cadena de búsqueda.
+ * @param data Array de datos en el que se realizará la búsqueda.
+ * @param nombre El nombre de la propiedad sobre la que se realizará la búsqueda.
+ * @param setData Función para actualizar los datos filtrados con los resultados de la búsqueda.
+ */
   export const handleSearch = (
     query: string,
     data: any[],

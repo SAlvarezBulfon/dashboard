@@ -72,7 +72,7 @@ const TableComponent: React.FC<Props> = ({ data, columns, onEdit, onDelete }) =>
                 </TableCell>
               ))}
               <TableCell>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: 'flex'}}>
                   {/* Utilizamos los nuevos componentes de botones */}
                   <EditButton onClick={() => onEdit(index)} />
                   <DeleteButton onClick={() => onDelete(index)} />

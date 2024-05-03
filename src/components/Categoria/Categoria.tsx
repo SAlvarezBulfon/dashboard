@@ -1,6 +1,6 @@
-import  { useEffect, useState } from "react";
-import { Box, Typography, Button, Container } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { Box, Typography, Button, Container, IconButton, Tooltip } from "@mui/material";
+import { Add, AddCircle, Visibility } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { setCategoria } from "../../redux/slices/categoria";
 import TableComponent from "../Table/Table";
@@ -9,7 +9,7 @@ import CategoriaService from "../../services/CategoriaService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
 import ModalCategoria from "../Modal/ModalCategoria";
-import ModalSubcategoria from "../Modal/ModalSubcategorias"; 
+import ModalSubcategoria from "../Modal/ModalSubcategorias";
 import { toggleModal } from "../../redux/slices/modal";
 import ICategoria from "../../types/Categoria";
 import { List, ListItem, ListItemText } from "@mui/material";
@@ -25,29 +25,30 @@ const Categoria = () => {
   );
 
   const [filteredData, setFilteredData] = useState<Row[]>([]);
-  const [showSubcategoriaModal, setShowSubcategoriaModal] = useState<boolean>(false); // Estado para controlar la visibilidad del modal de subcategoría
-  const [categoriaPadre, setCategoriaPadre] = useState<ICategoria>();
+  const [showSubcategoriaModal, setShowSubcategoriaModal] = useState<boolean>(
+    false
+  ); // Estado para controlar la visibilidad del modal de subcategoría
+  const [categoriaPadre, setCategoriaPadre] = useState<ICategoria | null>(null);
+
   // Función para obtener las categorias
   const fetchCategorias = async () => {
     try {
-      const categorias = await categoriaService.getAll(url + 'categorias');
-      dispatch(setCategoria(categorias)); 
-      setFilteredData(categorias); 
+      const categorias = await categoriaService.getAll(url + "categorias");
+      dispatch(setCategoria(categorias));
+      setFilteredData(categorias);
     } catch (error) {
       console.error("Error al obtener las categorias:", error);
     }
   };
 
   useEffect(() => {
-    fetchCategorias(); 
-  }, [dispatch]); 
+    fetchCategorias();
+  }, [dispatch, categoriaPadre]);
 
-  
-  
-    // Llama a la función handleSearch cuando se realiza una búsqueda
-    const onSearch = (query: string) => {
-      handleSearch(query, globalCategorias, 'denominacion', setFilteredData);
-    };
+  // Llama a la función handleSearch cuando se realiza una búsqueda
+  const onSearch = (query: string) => {
+    handleSearch(query, globalCategorias, "denominacion", setFilteredData);
+  };
 
   // Función para editar una categoría
   const handleEdit = (index: number) => {
@@ -67,29 +68,33 @@ const Categoria = () => {
       categoriaService,
       filteredData,
       fetchCategorias,
-      '¿Estás seguro de eliminar esta categoría?',
-      'Categoría eliminada correctamente.',
-      'Hubo un problema al eliminar la categoría.',
-      url + 'categorias'
+      "¿Estás seguro de eliminar esta categoría?",
+      "Categoría eliminada correctamente.",
+      "Hubo un problema al eliminar la categoría.",
+      url + "categorias"
     );
   };
 
- // Función para abrir el modal de subcategoría
- const handleOpenSubcategoriaModal = (categoria: ICategoria) => {
-  setCategoriaPadre(categoria); // Guarda la categoría padre en el estado
-  setShowSubcategoriaModal(true);
-};
-
-  // Función para verificar si una categoría es una subcategoría
-  const tieneSubcategoria = (categoria: ICategoria): boolean => {
-    // Verificar si la categoría tiene subcategorías
-    return categoria.subCategorias.length > 0;
+  const handleOpenSubcategoriaModal = (categoria: ICategoria) => {
+    setCategoriaPadre(categoria);
+    setShowSubcategoriaModal(true);
   };
+
+  const handleCloseSubcategoriaModal = () => {
+    setShowSubcategoriaModal(false);
+    setCategoriaPadre(null); // Limpiamos la categoría padre
+  };
+
+  // // Función para verificar si una categoría es una subcategoría
+  // const tieneSubcategoria = (categoria: ICategoria): boolean => {
+  //   // Verificar si la categoría tiene subcategorías
+  //   return categoria.subCategorias.length > 0;
+  // };
 
   // Definición de las columnas para la tabla de categorías
   const columns: Column[] = [
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
-    { id: "esSubcategoria", label: "¿Tiene Subcategoría?", renderCell: (rowData) => <>{tieneSubcategoria(rowData) ? "Sí" : "No"}</> },
+    // { id: "esSubcategoria", label: "¿Tiene Subcategoría?", renderCell: (rowData) => <>{tieneSubcategoria(rowData) ? "Sí" : "No"}</> },
     {
       id: "subCategorias",
       label: "Subcategorías",
@@ -123,12 +128,42 @@ const Categoria = () => {
         </Button>
       ),
     },
+    {
+      id: "articulos",
+      label: "Artículos",
+      renderCell: () => (
+        <Box>
+          <Tooltip title="Ver Artículos">
+            <IconButton
+              aria-label="Ver Artículos"
+            >
+              <Visibility />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Agregar artículo">
+            <IconButton
+              aria-label="Agregar artículo"
+            >
+               <AddCircle />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+    
   ];
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, my: 2}}>
+    <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
       <Container>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            my: 1,
+          }}
+        >
           <Typography variant="h5" gutterBottom>
             Categorías
           </Typography>
@@ -147,20 +182,28 @@ const Categoria = () => {
           </Button>
         </Box>
         {/* Barra de búsqueda */}
-        <Box sx={{mt:2 }}>
+        <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar las categorías */}
-        <TableComponent 
-          data={filteredData} 
-          columns={columns} 
-          onEdit={handleEdit} 
-          onDelete={onDelete} 
+        <TableComponent
+          data={filteredData}
+          columns={columns}
+          onEdit={handleEdit}
+          onDelete={onDelete}
         />
         {/* Modal de añadir categoría */}
         <ModalCategoria getCategorias={fetchCategorias} />
         {/* Modal de agregar subcategoría */}
-        {showSubcategoriaModal && categoriaPadre && <ModalSubcategoria categoriaPadre={categoriaPadre} getSubcategorias={fetchCategorias} />}
+        {showSubcategoriaModal && categoriaPadre && (
+          <ModalSubcategoria
+            categoriaPadre={categoriaPadre}
+            getSubcategorias={fetchCategorias}
+            setCategoria={dispatch} // Asegúrate de que dispatch sea la función que actualiza el estado de categoría
+            onClose={handleCloseSubcategoriaModal}
+          />
+
+        )}
       </Container>
     </Box>
   );
