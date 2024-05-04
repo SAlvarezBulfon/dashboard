@@ -64,7 +64,7 @@ const Promocion: React.FC = () => {
         '¿Estás seguro de eliminar esta promoción?',
         'Promoción eliminada correctamente.',
         'Hubo un problema al eliminar la promoción.',
-        url + 'sucursales'
+        url + 'promociones'
       );
     };
 

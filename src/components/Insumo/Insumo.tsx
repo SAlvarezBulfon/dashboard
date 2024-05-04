@@ -50,7 +50,7 @@ const Insumo = () => {
       '¿Estás seguro de eliminar este producto?',
       'Producto eliminado correctamente.',
       'Hubo un problema al eliminar el producto.',
-      url + 'sucursales'
+      url + 'articulosInsumos'
     );
   };
 
