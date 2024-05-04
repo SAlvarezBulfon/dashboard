@@ -7,6 +7,7 @@ import { empresaSlice } from '../slices/empresa'
 import { sucursalSlice } from '../slices/sucursal'
 import modal from '../slices/modal'
 import tabla from '../slices/tabla'
+import { unidadMedidaSlice } from '../slices/unidadesMedidas'
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +18,8 @@ export const store = configureStore({
     empresa: empresaSlice.reducer,
     sucursal: sucursalSlice.reducer,
     modal: modal,
-    tabla: tabla
+    tabla: tabla,
+    unidadMedida: unidadMedidaSlice.reducer
   },
 })
 

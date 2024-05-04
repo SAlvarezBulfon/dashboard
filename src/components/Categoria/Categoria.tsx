@@ -198,8 +198,6 @@ const Categoria = () => {
         {showSubcategoriaModal && categoriaPadre && (
           <ModalSubcategoria
             categoriaPadre={categoriaPadre}
-            getSubcategorias={fetchCategorias}
-            setCategoria={dispatch} // Asegúrate de que dispatch sea la función que actualiza el estado de categoría
             onClose={handleCloseSubcategoriaModal}
           />
 

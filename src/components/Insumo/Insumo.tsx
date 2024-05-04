@@ -9,43 +9,34 @@ import InsumoService from "../../services/InsumoService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
 import { handleDelete, handleSearch } from "../../utils/utilities";
-
+import ModalCrearArticuloInsumo from "../Modal/ModalCrearArticuloInsumo";
 
 const Insumo = () => {
-  // Obtiene la función de despacho de acciones de Redux.
   const dispatch = useAppDispatch();
-  // Obtiene el estado global de Redux relacionado con los artículos de insumo.
   const globalArticulosInsumos = useAppSelector((state) => state.articuloInsumo.articuloInsumo);
   const url = import.meta.env.VITE_API_URL;
   const insumoService = new InsumoService();
-
-  // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const [openModal, setOpenModal] = useState(false); // Estado para controlar la apertura y cierre del modal
 
   const fetchArticulosInsumos = async () => {
     try {
-      // Obtiene todos los artículos de insumo.
       const articulosInsumos = await insumoService.getAll(url + 'articulosInsumos')
-      // Envía los artículos de insumo al estado global de Redux.
       dispatch(setArticuloInsumo(articulosInsumos)); 
-      // Establece los datos filtrados para su visualización.
       setFilteredData(articulosInsumos); 
     } catch (error) {
       console.error("Error al obtener los artículos de insumo:", error);
     }
   };
-  // Efecto que se ejecuta al cargar el componente para obtener los artículos de insumo.
+
   useEffect(() => {
     fetchArticulosInsumos();
   }, [dispatch]); 
 
-  // Llama a la función handleSearch cuando se realiza una búsqueda
   const onSearch = (query: string) => {
     handleSearch(query, globalArticulosInsumos, 'denominacion', setFilteredData);
   };
 
-
-  // Función para editar insumo
   const handleEdit = (index: number) => {
     console.log("Editar insumo en el índice", index);
   };
@@ -63,7 +54,6 @@ const Insumo = () => {
     );
   };
 
-  // Columnas de la tabla de artículos de insumo.
   const columns: Column[] = [
     {
       id: "imagen",
@@ -103,6 +93,7 @@ const Insumo = () => {
             }}
             variant="contained"
             startIcon={<Add />}
+            onClick={() => setOpenModal(true)} // Abre el modal al hacer clic en el botón de agregar
           >
             Insumo
           </Button>
@@ -112,6 +103,9 @@ const Insumo = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
       </Container>
+
+      {/* Modal para crear un nuevo insumo */}
+      <ModalCrearArticuloInsumo show={openModal} onClose={() => setOpenModal(false)} /> {/* Pasa el estado y la función para cerrar el modal como props */}
     </Box>
   );
 };
