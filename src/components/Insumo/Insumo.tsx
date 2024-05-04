@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
@@ -8,8 +8,9 @@ import { setArticuloInsumo } from "../../redux/slices/articuloInsumo";
 import InsumoService from "../../services/InsumoService";
 import Row from "../../types/Row";
 import Column from "../../types/Column";
+import ModalArticuloInsumo from "../Modal/ModalArticuloInsumo"; 
 import { handleDelete, handleSearch } from "../../utils/utilities";
-import ModalCrearArticuloInsumo from "../Modal/ModalCrearArticuloInsumo";
+import IArticuloInsumo from "../../types/ArticuloInsumo";
 
 const Insumo = () => {
   const dispatch = useAppDispatch();
@@ -18,10 +19,11 @@ const Insumo = () => {
   const insumoService = new InsumoService();
   const [filteredData, setFilteredData] = useState<Row[]>([]);
   const [openModal, setOpenModal] = useState(false); // Estado para controlar la apertura y cierre del modal
+  const [selectedArticle, setSelectedArticle] = useState<IArticuloInsumo | null>(null); // Estado para almacenar el artículo seleccionado
 
   const fetchArticulosInsumos = async () => {
     try {
-      const articulosInsumos = await insumoService.getAll(url + 'articulosInsumos')
+      const articulosInsumos = await insumoService.getAll(url + 'articulosInsumos');
       dispatch(setArticuloInsumo(articulosInsumos)); 
       setFilteredData(articulosInsumos); 
     } catch (error) {
@@ -38,8 +40,10 @@ const Insumo = () => {
   };
 
   const handleEdit = (index: number) => {
-    console.log("Editar insumo en el índice", index);
-  };
+    const selectedArticle = filteredData[index] as IArticuloInsumo; // Conversión explícita de Row a IArticuloInsumo
+    setSelectedArticle(selectedArticle); // Asigna el artículo seleccionado al estado
+    setOpenModal(true); // Abre el modal
+};
 
   const onDelete = async (index: number) => {
     handleDelete(
@@ -102,10 +106,13 @@ const Insumo = () => {
           <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
+        <ModalArticuloInsumo 
+          show={openModal} 
+          onClose={() => setOpenModal(false)} 
+          getArticulosInsumo={fetchArticulosInsumos} 
+          selectedArticle={selectedArticle} // Pasa el artículo seleccionado como prop
+        />
       </Container>
-
-      {/* Modal para crear un nuevo insumo */}
-      <ModalCrearArticuloInsumo show={openModal} onClose={() => setOpenModal(false)} /> {/* Pasa el estado y la función para cerrar el modal como props */}
     </Box>
   );
 };
