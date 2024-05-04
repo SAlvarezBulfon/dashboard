@@ -10,10 +10,9 @@ interface Props {
     show: boolean;
     onClose: () => void;
     getArticulosInsumo: () => void;
-    selectedArticle: IArticuloInsumo | null; // Recibe el artículo seleccionado como una prop
 }
 
-const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsumo, selectedArticle }) => {
+const ModalCrearArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsumo }) => {
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [initialValues, setInitialValues] = useState<IArticuloInsumo>({
         id: 0,
@@ -34,26 +33,22 @@ const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsum
     const url = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
-        if (!selectedArticle) {
-            setInitialValues({
+        setInitialValues({
+            id: 0,
+            denominacion: "",
+            precioVenta: 0,
+            precioCompra: 0,
+            imagenes: [],
+            unidadMedida: {
                 id: 0,
                 denominacion: "",
-                precioVenta: 0,
-                precioCompra: 0,
-                imagenes: [],
-                unidadMedida: {
-                    id: 0,
-                    denominacion: "",
-                },
-                stockActual: 0,
-                stockMaximo: 0,
-                stockMinimo: 0,
-                esParaElaborar: false,
-            });
-        } else {
-            setInitialValues(selectedArticle);
-        }
-    }, [selectedArticle]);
+            },
+            stockActual: 0,
+            stockMaximo: 0,
+            stockMinimo: 0,
+            esParaElaborar: false,
+        });
+    }, []);
 
     return (
         <Modal
@@ -66,7 +61,7 @@ const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsum
         >
             <Modal.Header closeButton>
                 <Modal.Title>
-                    {selectedArticle ? "Editar artículo insumo:" : "Añadir artículo insumo:"}
+                    Añadir artículo insumo:
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -86,15 +81,8 @@ const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsum
                     enableReinitialize={true}
                     onSubmit={async (values: IArticuloInsumo, { setSubmitting }) => {
                         try {
-                            if (selectedArticle) {
-                                // Lógica para editar un artículo insumo existente
-                                await articuloInsumoService.put(url + "articulosInsumos", values.id.toString(), values);
-                                setSuccessMessage("Se ha actualizado correctamente.");
-                            } else {
-                                // Lógica para agregar un nuevo artículo insumo
-                                await articuloInsumoService.post(url + "articulosInsumos", values);
-                                setSuccessMessage("Se ha agregado correctamente.");
-                            }
+                            await articuloInsumoService.post(url + "articulosInsumos", values);
+                            setSuccessMessage("Se ha agregado correctamente.");
                             getArticulosInsumo();
                             setTimeout(() => {
                                 setSuccessMessage("");
@@ -140,7 +128,6 @@ const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsum
                                 />
                                 <ErrorMessage name="precioCompra" className="error-message" component="div" />
 
-                                {/* Agrega el campo para la imagen */}
                                 <label htmlFor="imagenes">Imagen:</label>
                                 <Field
                                     name="imagenes[0].url"
@@ -168,7 +155,6 @@ const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsum
                                 />
                                 <ErrorMessage name="stockMaximo" className="error-message" component="div" />
 
-                                {/* Agrega el campo para el stock mínimo */}
                                 <label htmlFor="stockMinimo">Stock Mínimo:</label>
                                 <Field
                                     name="stockMinimo"
@@ -202,4 +188,4 @@ const ModalArticuloInsumo: React.FC<Props> = ({ show, onClose, getArticulosInsum
     );
 };
 
-export default ModalArticuloInsumo;
+export default ModalCrearArticuloInsumo;
