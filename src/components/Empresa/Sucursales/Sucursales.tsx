@@ -11,6 +11,8 @@ import Sucursal from '../../../types/Sucursal';
 import EmpresaService from '../../../services/EmpresaService'; // Importa el servicio de la empresa
 import { setSucursal } from '../../../redux/slices/sucursal';
 import { handleDelete, handleSearch } from '../../../utils/utilities';
+import { toggleModal } from '../../../redux/slices/modal';
+import ModalSucursal from '../../Modal/modalSucursal';
 
 const SucursalesEmpresa: React.FC = () => {
   const { empresaId } = useParams<{ empresaId: string }>();
@@ -80,7 +82,10 @@ const SucursalesEmpresa: React.FC = () => {
     const sucursalId = filteredData[index].id;
     console.log('Editar sucursal con ID:', sucursalId);
   };
-
+  const handleAddSucursal = () => {
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+  
   const columns: Column[] = [
     { id: 'nombre', label: 'Nombre', renderCell: (sucursal) => <>{sucursal.nombre}</> },
     { id: 'calle', label: 'Calle', renderCell: (sucursal) => <>{sucursal.domicilio.calle}</> },
@@ -98,6 +103,7 @@ const SucursalesEmpresa: React.FC = () => {
            Sucursales de {nombreEmpresa}
           </Typography>
           <Button
+          onClick={handleAddSucursal}
             sx={{
               bgcolor: "#fb6376",
               "&:hover": {
@@ -114,6 +120,7 @@ const SucursalesEmpresa: React.FC = () => {
           <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDelete} onEdit={handleEdit} />
+        <ModalSucursal getSucursales={fetchSucursales} />
       </Container>
     </Box>
   );
